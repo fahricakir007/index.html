@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profesyonel Mevduat Hesaplama Aracı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #555;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper .currency-symbol {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            margin-top: 30px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f4f8 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e1e8ed;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: fadeInScale 0.5s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result-title {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-top: 10px;
+            padding: 15px;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .result-label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .result-item:last-child .result-label,
+        .result-item:last-child .result-value {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            font-size: 0.9rem;
+        }
+
+        .info-box h4 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .info-box li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-container {
+                padding: 25px;
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-calculator"></i> Mevduat Hesaplama</h1>
+            <p>Profesyonel faiz ve stopaj hesaplayıcı</p>
+        </div>
+        
+        <div class="form-container">
+            <div class="input-group">
+                <label for="amount">Ana Para Miktarı</label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">₺</span>
+                    <input type="text" id="amount" placeholder="Örn: 100.000" inputmode="numeric">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="rate">Yıllık Faiz Oranı</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-percentage"></i>
+                    <input type="number" id="rate" placeholder="Örn: 25.50" min="0" max="100" step="0.01">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="days">Vade (Gün)</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-calendar-days"></i>
+                    <input type="number" id="days" placeholder="Örn: 90" min="1" step="1">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculate()">
+                <i class="fas fa-chart-line"></i> Hesapla
+            </button>
+
+            <div class="result-container" id="result-container">
+                <div class="result-title">
+                    <i class="fas fa-chart-pie"></i> Hesaplama Sonuçları
+                </div>
+                <div id="result-content"></div>
+            </div>
+
+            <div class="info-box">
+                <h4><i class="fas fa-info-circle"></i> Stopaj Oranları</h4>
+                <ul>
+                    <li>0-180 gün: %15</li>
+                    <li>181-365 gün: %12</li>
+                    <li>365+ gün: %10</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Para formatı için fonksiyon
+        function formatMoney(value) {
+            // Sadece rakamları al
+            let numericValue = value.replace(/[^\d]/g, '');
+            
+            // Boşsa boş döndür
+            if (!numericValue) return '';
+            
+            // Sayıyı formatla (3'lü gruplar halinde nokta ekle)
+            return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        // Para input'u için event listener
+        document.getElementById('amount').addEventListener('input', function(e) {
+            let value = e.target.value;
+            let formattedValue = formatMoney(value);
+            e.target.value = formattedValue;
+        });
+
+        // Para input'undan gerçek sayısal değeri al
+        function getNumericValue(formattedValue) {
+            return parseFloat(formattedValue.replace(/\./g, '')) || 0;
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: 'TRY',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('tr-TR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(num);
+        }
+
+        function validateInput(amount, rate, days) {
+            if (isNaN(amount) || amount <= 0) {
+                return "Geçerli bir ana para miktarı giriniz.";
+            }
+            if (isNaN(rate) || rate <= 0 || rate > 100) {
+                return "Faiz oranı 0-100 arasında olmalıdır.";
+            }
+            if (isNaN(days) || days <= 0) {
+                return "Geçerli bir gün sayısı giriniz.";
+            }
+            return null;
+        }
+
+        function getTaxRate(days) {
+            if (days <= 180) return 0.15;
+            if (days <= 365) return 0.12;
+            return 0.10;
+        }
+
+        function showLoading(btn) {
+            btn.innerHTML = '<span class="loading"></span>Hesaplanıyor...';
+            btn.disabled = true;
+        }
+
+        function hideLoading(btn) {
+            btn.innerHTML = '<i class="fas fa-chart-line"></i> Hesapla';
+            btn.disabled = false;
+        }
+
+        function showError(message) {
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
+            resultContainer.classList.add('show');
+        }
+
+        function calculate() {
+            const btn = document.querySelector('.calculate-btn');
+            showLoading(btn);
+
+            // Simüle edilmiş yükleme gecikmesi
+            setTimeout(() => {
+                // Ana para miktarını formatlanmış değerden al
+                const amount = getNumericValue(document.getElementById('amount').value);
+                const rate = parseFloat(document.getElementById('rate').value);
+                const days = parseInt(document.getElementById('days').value);
+
+                const error = validateInput(amount, rate, days);
+                if (error) {
+                    showError(error);
+                    hideLoading(btn);
+                    return;
+                }
+
+                // Hesaplamalar
+                const grossInterest = amount * rate * days / 36500;
+                const taxRate = getTaxRate(days);
+                const tax = grossInterest * taxRate;
+                const netInterest = grossInterest - tax;
+                const totalAmount = amount + netInterest;
+
+                // Sonuçları göster
+                const resultContainer = document.getElementById('result-container');
+                const resultContent = document.getElementById('result-content');
+                
+                resultContent.innerHTML = `
+                    <div class="result-item">
+                        <span class="result-label">Ana Para</span>
+                        <span class="result-value">${formatCurrency(amount)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Brüt Faiz</span>
+                        <span class="result-value">${formatCurrency(grossInterest)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Stopaj Oranı</span>
+                        <span class="result-value">%${(taxRate * 100).toFixed(1)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Kesilen Stopaj</span>
+                        <span class="result-value">${formatCurrency(tax)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label"><i class="fas fa-star"></i> Net Kazanç</span>
+                        <span class="result-value"><i class="fas fa-arrow-up"></i> ${formatCurrency(netInterest)}</span>
+                    </div>
+                `;
+
+                resultContainer.classList.add('show');
+                hideLoading(btn);
+            }, 800);
+        }
+
+        // Enter tuşu ile hesaplama
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculate();
+            }
+        });
+
+        // Input animasyonları
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Sayfa yüklendiğinde örnek değer ekle
+        document.addEventListener('DOMContentLoaded', function() {
+            // Örnek değerler (isteğe bağlı)
+            // document.getElementById('amount').value = '100.000';
+            // document.getElementById('rate').value = '25.50';
+            // document.getElementById('days').value = '90';
+        });
+    </script>
+</body>
+</html>
